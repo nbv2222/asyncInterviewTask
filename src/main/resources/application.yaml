@@ -1,0 +1,24 @@
+#I-Free
+com:
+  ifree:
+    amqp:
+      enabled: true
+      exchange: async.task.test.queue
+      routing-key: async.task.test.queue
+      host: amqp://srv7-tomczyki
+      port: 5672
+      username: guest
+      password: guest
+      virtual-host: /
+
+
+#Spring
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
