@@ -14,21 +14,18 @@ public class AmqpService {
   private MessageConverter messageConverter;
 
   public AmqpService(
-      Sender sender,
-      AmqpConfigurationProperties properties,
-      MessageConverter messageConverter) {
+      Sender sender, AmqpConfigurationProperties properties, MessageConverter messageConverter) {
     this.sender = sender;
     this.properties = properties;
     this.messageConverter = messageConverter;
   }
 
-  public Mono<Void> send(Mono<Payment> message) { // could be generic. Simplified it
+  public Mono<Void> send(Payment message) { // could be generic. Simplified it
     return sender.send(
-        message.map(
-            payment ->
-                new OutboundMessage(
-                    properties.getExchange(),
-                    properties.getRoutingKey(),
-                    messageConverter.toMessage(message, new MessageProperties()).getBody())));
+        Mono.just(
+            new OutboundMessage(
+                properties.getExchange(),
+                properties.getRoutingKey(),
+                messageConverter.toMessage(message, new MessageProperties()).getBody())));
   }
 }

@@ -2,7 +2,6 @@ package com.ifree.async.task.amqp.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ifree.async.task.amqp.AmqpService;
-import com.ifree.async.task.dao.repository.PaymentRepository;
 import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -25,8 +24,7 @@ public class AmqpServiceAutoConfiguration {
   @Bean
   public AmqpService amqpService(
       AmqpConfigurationProperties properties,
-      MessageConverter messageConverter,
-      PaymentRepository paymentRepository)
+      MessageConverter messageConverter)
       throws Exception {
     ConnectionFactory connectionFactory = new ConnectionFactory();
     connectionFactory.useNio();

@@ -11,14 +11,17 @@ com:
       password: guest
       virtual-host: /
 
+logging.level:
+  root: INFO
 
 #Spring
 spring:
   h2:
     console:
       enabled: true
+      path: /console
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:test
     username: sa
     password:
     driver-class-name: org.h2.Driver

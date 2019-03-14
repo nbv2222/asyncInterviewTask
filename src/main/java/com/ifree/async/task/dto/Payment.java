@@ -16,7 +16,7 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Payment {
-  private Long paymentId;
+  @NotNull private Long paymentId;
 
   @NotBlank private String account;
 
