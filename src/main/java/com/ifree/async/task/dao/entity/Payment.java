@@ -26,6 +26,4 @@ public class Payment {
   private String account;
 
   private BigInteger amount;
-
-
 }

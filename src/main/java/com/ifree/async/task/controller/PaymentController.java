@@ -6,6 +6,7 @@ import com.ifree.async.task.dto.Payment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -22,7 +23,7 @@ public class PaymentController {
   }
 
   @PostMapping("/payment")
-  public Mono<Payment> process(Payment payment) throws InterruptedException {
+  public Mono<Payment> process(@RequestBody Payment payment) throws InterruptedException {
     Thread.sleep(1000);
     return Mono.fromFuture(paymentRepository.save(toEntity(payment)))
         .map(Payment::fromEntity)

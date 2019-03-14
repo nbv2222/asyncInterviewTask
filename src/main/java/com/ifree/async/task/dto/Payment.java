@@ -13,10 +13,10 @@ import java.math.BigInteger;
 @Data
 @Builder
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Payment {
-  @NotNull private Long id;
+  private Long paymentId;
 
   @NotBlank private String account;
 
@@ -28,7 +28,7 @@ public class Payment {
     return com.ifree.async.task.dao.entity.Payment.builder()
         .account(payment.getAccount())
         .amount(payment.getAmount())
-        .id(payment.getId())
+        .id(payment.getPaymentId())
         .status(payment.getStatus())
         .build();
   }
@@ -37,7 +37,7 @@ public class Payment {
     return Payment.builder()
         .account(payment.getAccount())
         .amount(payment.getAmount())
-        .id(payment.getId())
+        .paymentId(payment.getId())
         .status(payment.getStatus())
         .build();
   }

@@ -42,7 +42,7 @@ public class AmqpServiceAutoConfiguration {
             .connectionSubscriptionScheduler(Schedulers.elastic());
     Sender sender = RabbitFlux.createSender(senderOptions);
 
-    return new AmqpService(sender, properties, messageConverter, paymentRepository);
+    return new AmqpService(sender, properties, messageConverter);
   }
 
   @Bean
