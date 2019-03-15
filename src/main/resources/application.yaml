@@ -5,7 +5,7 @@ com:
       enabled: true
       exchange: async.task.test.queue
       routing-key: async.task.test.queue
-      host: amqp://srv7-tomczyki
+      host: amqp://srv7-dasar
       port: 5672
       username: guest
       password: guest

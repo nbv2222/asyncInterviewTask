@@ -4,6 +4,7 @@ import com.ifree.async.task.amqp.AmqpService;
 import com.ifree.async.task.dao.repository.PaymentRepository;
 import com.ifree.async.task.dto.Payment;
 import com.ifree.async.task.dto.PaymentStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import static com.ifree.async.task.dto.Payment.toEntity;
+import javax.validation.Valid;
+import java.util.concurrent.Executors;
 
+@Slf4j
 @RestController
 public class PaymentController {
   private AmqpService amqpService;
@@ -25,31 +28,38 @@ public class PaymentController {
   }
 
   @PostMapping("/payment")
-  public Mono<ResponseEntity> createPayment(@RequestBody Payment payment) {
-    return Mono.just(ResponseEntity.accepted().build()).then(process(payment));
-    // todo возможно ли вернуть аццептед, до того как будет выполнен метод process
+  public Mono<ResponseEntity> createPayment(@RequestBody @Valid Payment payment) {
+    Executors.newSingleThreadExecutor().execute(() -> process(payment));
+    return Mono.just(ResponseEntity.accepted().build());
   }
 
-  private Mono<Payment> process(Payment payment) {
+  private void process(Payment payment) {
     payment.setStatus(PaymentStatus.COMPLETE);
-    return Mono.fromFuture(paymentRepository.save(toEntity(payment)))
-        .map(Payment::fromEntity)
+    Mono.just(payment)
         .flatMap(
             dto -> {
               try {
-                Thread.sleep(2000);
+                Thread.sleep(5000);
               } catch (InterruptedException e) {
                 e.printStackTrace();
               }
               return amqpService.send(dto);
             })
-        .thenReturn(payment);
+        .then(Mono.just(payment))
+        .map(Payment::toEntity)
+        .flatMap(entity -> Mono.fromFuture(paymentRepository.save(entity)))
+        .doOnError(DataIntegrityViolationException.class, e -> log.info("Database Error", e))
+        .doOnError(Exception.class, e -> log.info("Some error occurs", e))
+        // possible fill the chain next
+        // could be ExceptionHandler -> @RestControllerAdvice
+        .block();
   }
 
   @GetMapping("/payment")
-  public Mono<Payment> getPayment(Long paymentId) {
+  public Mono<ResponseEntity<Payment>> getPayment(Long paymentId) {
     return Mono.fromFuture(paymentRepository.findById(paymentId))
         .map(Payment::fromEntity)
-        .doOnError(DataIntegrityViolationException.class, e -> new RuntimeException());
+        .map(ResponseEntity::ok)
+        .defaultIfEmpty(ResponseEntity.badRequest().build());
   }
 }
